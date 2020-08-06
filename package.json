@@ -1,0 +1,35 @@
+{
+  "name": "@web-native-js/dom",
+  "title": "Server-Side DOM",
+  "description": "A generic DOM package based on jsdom.",
+  "keywords": [
+    "SSR",
+    "DOM"
+  ],
+  "homepage": "https://www.web-native.dev",
+  "icon": "https://www.web-native.dev/icon.svg",
+  "author": {
+    "name": "Oxford Harrison",
+    "email": "oxharris.dev@gmail.com"
+  },
+  "version": "0.0.1",
+  "license": "MIT",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/web-native/dom.git"
+  },
+  "funding": {
+    "type": "patreon",
+    "url": "https://patreon.com/ox_harris"
+  },
+  "main": "index.js",
+  "dependencies": {
+    "@web-native-js/commons": "^0.5.1",
+    "jsdom": "^16.2.2",
+    "chalk": "^4.1.0"
+  },
+  "bugs": {
+    "url": "https://github.com/web-native/dom/issues"
+  }
+}
