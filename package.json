@@ -1,26 +1,25 @@
 {
-  "name": "@web-native-js/dom",
-  "title": "Server-Side DOM",
-  "description": "A generic DOM package based on jsdom.",
+  "name": "@web-native-js/browser-pie",
+  "title": "Browser Pie",
+  "description": "Server-Side Browser API based on jsdom.",
   "keywords": [
     "SSR",
     "DOM"
   ],
-  "homepage": "https://www.web-native.dev",
-  "icon": "https://www.web-native.dev/icon.svg",
+  "homepage": "https://web-native.dev/package/browser-pie",
   "version": "0.0.2",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/web-native/dom.git"
+    "url": "git+https://github.com/web-native/browser-pie.git"
   },
   "bugs": {
-    "url": "https://github.com/web-native/dom/issues"
+    "url": "https://github.com/web-native/browser-pie/issues"
   },
   "type": "module",
   "main": "index.js",
   "dependencies": {
-    "@web-native-js/commons": "^0.5.1",
+    "@onephrase/util": "^0.5.5",
     "jsdom": "^16.2.2",
     "chalk": "^4.1.0"
   },
@@ -42,9 +41,9 @@
     "config": {
       "patreonUsername": "ox_harris",
       "githubUsername": "web-native",
-      "githubRepository": "dom",
-      "githubSlug": "web-native/dom",
-      "npmPackageName": "@web-native-js/observables"
+      "githubRepository": "browser-pie",
+      "githubSlug": "web-native/browser-pie",
+      "npmPackageName": "@web-native-js/browser-pie"
     }
   }
 }

@@ -4,7 +4,7 @@
  */
 import Url from 'url';
 import QueryString from 'querystring';
-import { create } from './index.js';
+import { createWindow } from './index.js';
 
 // -----------
 // Obtain parameters passed here 
@@ -12,7 +12,7 @@ import { create } from './index.js';
 // -----------
 const importURL = Url.parse(import.meta.url);
 const params = QueryString.parse(importURL.query);
-const jsdomInstance = create(params);
+const jsdomInstance = createWindow(params);
 var document = jsdomInstance.window.document,
     window = jsdomInstance.window;
 

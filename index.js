@@ -20,7 +20,7 @@ import ResourceLoader from './ResourceLoader.js';
  * 
  * @return Jsdom.JSDOM
  */
-export function create(params) {
+export function createWindow(params) {
 
     if (params.document && !Fs.existsSync(params.document)) {
         throw new Error('The document filename given in query parameter "?document=' + params.document + '" does not exist.');
@@ -36,6 +36,7 @@ export function create(params) {
         contentType: 'text/html',
         pretendToBeVisual: parseInt(params['pretend-to-be-visual']) === 1,
     });
+    
     // Polyfill the window.fetch API
     jsdomInstance.window.fetch = (url, options) => new Promise((resolve, reject) => {
         var resourceLoader, resourcePromise;
