@@ -5,60 +5,60 @@
 import Fs from 'fs';
 import Path from 'path';
 import Jsdom from 'jsdom';
-import ResourceLoader from './ResourceLoader.js';
-
+import nodeFetch from 'node-fetch';
+import Chtml from '@web-native-js/chtml';
 /**
  * Creates a DOM instance.
  * 
  * @param object params
- *      document,
- *      pretend-to-be-visual,
- *      resources,
- *      show-fetch-log,
- *      localhost,
- *      user-agent,
+ *      visual,
+ *      logging,
+ *      host,
+ *      ua,
  * 
  * @return Jsdom.JSDOM
  */
-export function createWindow(params) {
+export function createWindow(source, params) {
 
-    if (params.document && !Fs.existsSync(params.document)) {
-        throw new Error('The document filename given in query parameter "?document=' + params.document + '" does not exist.');
-    }
-    if (params.resources && !Fs.existsSync(params.resources)) {
-        throw new Error('The resources DIR given in query parameter "?resources=' + params.resources + '" does not exist.');
+    var domIsMarkup = source.trim().startsWith('<');
+    if (!domIsMarkup && source && !Fs.existsSync(source)) {
+        throw new Error('The document filename given in query parameter "?document=' + source + '" does not exist.');
     }
     
     // -----------
     // Window setup
     // -----------
-    const jsdomInstance = new Jsdom.JSDOM(params.document ? Fs.readFileSync(params.document).toString() : '', {
+    const jsdomInstance = new Jsdom.JSDOM(domIsMarkup ? source : (source ? Fs.readFileSync(source).toString() : ''), {
         contentType: 'text/html',
-        pretendToBeVisual: parseInt(params['pretend-to-be-visual']) === 1,
+        pretendToBeVisual: params.visual !== false,
+        beforeParse(window) {
+            // Polyfill the window.fetch API
+            window.fetch = (url, options) => {
+                url = url.trim();
+                // Prox relative URLs
+                if (url.startsWith('//')) {
+                    url = 'http:' + url;
+                } else if (!url.startsWith('http')) {
+                    url = Path.join(params.host, url);
+                }
+                if (params.logging) {
+                    console.log('[FETCH]: ' + url);
+                }
+                return nodeFetch(url, options);
+            };
+            // Add the window.print method
+            window.print = () => jsdomInstance.serialize();
+            // The CHTML polyfill
+            new Chtml(window);
+        }/*,
+        resources: new Jsdom.ResourceLoader({
+            proxy: params.host, //"http://127.0.0.1:9001",
+            strictSSL: false,
+            userAgent: params.ua, //"Mellblomenator/9000",
+        })*/,
     });
     
-    // Polyfill the window.fetch API
-    jsdomInstance.window.fetch = (url, options) => new Promise((resolve, reject) => {
-        var resourceLoader, resourcePromise;
-        try {
-            resourceLoader = new ResourceLoader({
-                resourcesDir: params.resources || (params.document ? Path.dirname(params.document) : ''),
-                localhost: params.localhost,
-                'user-agent': params['user-agent'],
-                showFetchLog: parseInt(params['show-fetch-log']) === 1,
-            });
-        } catch(e) {
-            return Promise.reject(e);
-        }
-        resourcePromise = resourceLoader.fetch(url, options);
-        resolve({
-            ok: true,
-            text: () => resourcePromise,
-            json: () => resourcePromise.then(data => JSON.parse(data)),
-        });
-    });
-    
-    return jsdomInstance;
+    return jsdomInstance.window;
 };
 
 /**
@@ -66,5 +66,4 @@ export function createWindow(params) {
  */
 export {
     Jsdom,
-    ResourceLoader,
 };

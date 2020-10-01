@@ -12,9 +12,8 @@ import { createWindow } from './index.js';
 // -----------
 const importURL = Url.parse(import.meta.url);
 const params = QueryString.parse(importURL.query);
-const jsdomInstance = createWindow(params);
-var document = jsdomInstance.window.document,
-    window = jsdomInstance.window;
+const window = createWindow(params.source, params);
+const document = window.document;
 
 if (parseInt(params.g) === 1) {
     global.window = window;
@@ -24,5 +23,4 @@ if (parseInt(params.g) === 1) {
 export {
     document,
     window,
-    jsdomInstance,
 };

@@ -7,6 +7,7 @@ import Url from 'url';
 import Path from 'path';
 import Jsdom from 'jsdom';
 import Chalk from 'chalk';
+import nodeFetch from 'node-fetch';
 
 /**
  * --------------
@@ -17,7 +18,7 @@ import Chalk from 'chalk';
 export default class ResourceLoader extends Jsdom.ResourceLoader {
 
     constructor(params = {}) {
-        super(params);
+        super({'user-agent': params['user-agent']});
         this._params = params;
     }
 
@@ -45,6 +46,7 @@ export default class ResourceLoader extends Jsdom.ResourceLoader {
                 console.log(Chalk.yellow('[FETCH]: Default resource fetching:'), url);
             }
         }
-        return super.fetch(url, options);
+        //return super.fetch(url, options);
+        return nodeFetch(url, options);
     }
 };
