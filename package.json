@@ -1,27 +1,27 @@
 {
-  "name": "@web-native-js/browser-pie",
-  "title": "Browser Pie",
-  "description": "Server-Side Browser API based on jsdom.",
+  "name": "@webqit/pseudo-browser",
+  "title": "Pseudo Browser",
+  "description": "Server-Side Browser API based on 'jsdom'.",
   "keywords": [
     "SSR",
     "DOM"
   ],
-  "homepage": "https://web-native.dev/package/browser-pie",
-  "version": "0.0.3",
+  "homepage": "https://webqit.dev/tooling/pseudo-browser",
+  "version": "0.0.5",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/web-native/browser-pie.git"
+    "url": "git+https://github.com/webqit/pseudo-browser.git"
   },
   "bugs": {
-    "url": "https://github.com/web-native/browser-pie/issues"
+    "url": "https://github.com/webqit/pseudo-browser/issues"
   },
   "type": "module",
   "main": "index.js",
   "dependencies": {
-    "@onephrase/util": "^0.6.0",
-    "@web-native-js/chtml": "^1.3.0",
-    "chalk": "^4.1.0",
+    "@webqit/oohtml": "^1.3.2",
+    "@webqit/browser-pie": "^0.0.3",
+    "@webqit/util": "^0.7.0",
     "jsdom": "^16.4.0",
     "node-fetch": "^2.6.1"
   },
@@ -42,10 +42,10 @@
     ],
     "config": {
       "patreonUsername": "ox_harris",
-      "githubUsername": "web-native",
-      "githubRepository": "browser-pie",
-      "githubSlug": "web-native/browser-pie",
-      "npmPackageName": "@web-native-js/browser-pie"
+      "githubUsername": "webqit",
+      "githubRepository": "pseudo-browser",
+      "githubSlug": "webqit/pseudo-browser",
+      "npmPackageName": "@webqit/pseudo-browser"
     }
   }
 }

@@ -11,11 +11,11 @@ import { createWindow } from './index.js';
 // via the import URL
 // -----------
 const importURL = Url.parse(import.meta.url);
-const params = QueryString.parse(importURL.query);
-const window = createWindow(params.source, params);
+const params = QueryString.parse(importURL.query.toUpperCase());
+const window = createWindow(params.SOURCE, params);
 const document = window.document;
 
-if (parseInt(params.g) === 1) {
+if (parseInt(params.G) === 1) {
     global.window = window;
     global.document = document;
 }
