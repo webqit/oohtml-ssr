@@ -8,7 +8,6 @@ import Path from 'path';
 import Jsdom from 'jsdom';
 import nodeFetch from 'node-fetch';
 import Oohtml from '@webqit/oohtml';
-import DOMInit from '@webqit/browser-pie/src/dom/index.js';
 import SelectiveResourceLoader from './SelectiveResourceLoader.js';
 
 /**
@@ -62,7 +61,7 @@ export function createWindow(source, params) {
             // Add the window.print method
             window.print = () => jsdomInstance.serialize();
             // The CHTML polyfill
-            Oohtml(DOMInit(window));
+            Oohtml(window);
         },
         resources: new SelectiveResourceLoader({
             strictSSL: false,
