@@ -2,11 +2,13 @@
 /**
  * @imports
  */
-import OOHTML from '@webqit/oohtml';
+import OOHTML, { Observer, Subscript } from '@webqit/oohtml';
 
 /**
  * @exports
  */
 export {
     OOHTML,
+    Observer,
+    Subscript,
 };
