@@ -11,7 +11,7 @@ import { createWindow } from './index.js';
 // via the import URL
 // -----------
 const importURL = Url.parse(import.meta.url);
-const params = QueryString.parse(importURL.query.toUpperCase());
+const params = QueryString.parse(importURL.query);
 const window = createWindow(params.SOURCE, params);
 const document = window.document;
 
