@@ -7,7 +7,7 @@
     "DOM"
   ],
   "homepage": "https://webqit.io/tooling/pseudo-browser",
-  "version": "0.2.8",
+  "version": "0.2.9",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -19,7 +19,7 @@
   "type": "module",
   "main": "index.js",
   "dependencies": {
-    "@webqit/oohtml": "^1.5.9",
+    "@webqit/oohtml": "^1.6.0",
     "@webqit/util": "^0.7.0",
     "jsdom": "^16.4.0",
     "node-fetch": "^2.6.1"
