@@ -18,8 +18,12 @@
   },
   "type": "module",
   "main": "index.js",
+  "scripts": {
+    "postversion": "npm publish",
+    "postpublish": "git push && git push --tags"
+  },
   "dependencies": {
-    "@webqit/oohtml": "^1.7.0",
+    "@webqit/oohtml": "^1.7.3",
     "@webqit/util": "^0.7.0",
     "jsdom": "^16.4.0",
     "node-fetch": "^2.6.1"

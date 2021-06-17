@@ -60,8 +60,6 @@ export function createWindow(source, params) {
             };
             // Add the window.print method
             window.print = () => jsdomInstance.serialize();
-            // The CHTML polyfill
-            Oohtml(window);
         },
         resources: new SelectiveResourceLoader({
             strictSSL: false,
@@ -69,6 +67,9 @@ export function createWindow(source, params) {
         }),
         runScripts: 'dangerously',
     });
+
+    // The CHTML polyfill
+    Oohtml.call(jsdomInstance.window);
     
     return jsdomInstance.window;
 };
