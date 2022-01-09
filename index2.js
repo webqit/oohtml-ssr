@@ -11,4 +11,4 @@ export {
     OOHTML,
     Observer,
     Subscript,
-};
+}

@@ -72,11 +72,11 @@ export function createWindow(source, params) {
     Oohtml.call(jsdomInstance.window);
     
     return jsdomInstance.window;
-};
+}
 
 /**
  * @exports
  */
 export {
     Jsdom,
-};
+}
