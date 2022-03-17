@@ -7,7 +7,7 @@ import Url from 'url';
 import Path from 'path';
 import Jsdom from 'jsdom';
 import nodeFetch from 'node-fetch';
-import Oohtml from '@webqit/oohtml';
+import domInit from '@webqit/browser-pie/src/dom/index.js';
 import SelectiveResourceLoader from './SelectiveResourceLoader.js';
 
 /**
@@ -69,7 +69,7 @@ export function createWindow(source, params) {
     });
 
     // The CHTML polyfill
-    Oohtml.call(jsdomInstance.window);
+    domInit.call(jsdomInstance.window);
     
     return jsdomInstance.window;
 }
