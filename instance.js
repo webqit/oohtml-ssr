@@ -16,8 +16,8 @@ const window = createWindow(params.SOURCE, params);
 const document = window.document;
 
 if (parseInt(params.G) === 1) {
-    global.window = window;
-    global.document = document;
+    globalThis.window = window;
+    globalThis.document = document;
 }
 
 export {

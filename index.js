@@ -7,7 +7,8 @@ import Url from 'url';
 import Path from 'path';
 import Jsdom from 'jsdom';
 import nodeFetch from 'node-fetch';
-import domInit from '@webqit/browser-pie/src/dom/index.js';
+import Oohtml from '@webqit/oohtml';
+import { compileFunction } from 'vm';
 import SelectiveResourceLoader from './SelectiveResourceLoader.js';
 
 /**
@@ -69,7 +70,12 @@ export function createWindow(source, params) {
     });
 
     // The CHTML polyfill
-    domInit.call(jsdomInstance.window);
+    const vmContext = jsdomInstance.getInternalVMContext();
+    Oohtml.call(jsdomInstance.window, { Subscript: { runtimeParams: {
+        compileFunction: (code, parameters) => compileFunction(code, parameters, {
+            parsingContext: vmContext,
+        }),
+    } } } );
     
     return jsdomInstance.window;
 }

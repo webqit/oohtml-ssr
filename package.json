@@ -1,20 +1,21 @@
 {
-  "name": "@webqit/pseudo-browser",
-  "title": "Pseudo Browser",
-  "description": "Server-Side Browser API based on 'jsdom'.",
+  "name": "@webqit/oohtml-ssr",
+  "title": "OOHTML SSR",
+  "description": "SSR module for OOHTML - based on 'jsdom'.",
   "keywords": [
+    "OOHTML",
     "SSR",
     "DOM"
   ],
-  "homepage": "https://webqit.io/tooling/pseudo-browser",
+  "homepage": "https://webqit.io/tooling/oohtml-ssr",
   "version": "1.0.0",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/webqit/pseudo-browser.git"
+    "url": "git+https://github.com/webqit/oohtml-ssr.git"
   },
   "bugs": {
-    "url": "https://github.com/webqit/pseudo-browser/issues"
+    "url": "https://github.com/webqit/oohtml-ssr/issues"
   },
   "type": "module",
   "main": "index.js",
@@ -23,6 +24,7 @@
     "postpublish": "git push && git push --tags"
   },
   "dependencies": {
+    "@webqit/oohtml": "^1.9.17",
     "@webqit/util": "^0.7.0",
     "jsdom": "^16.4.0",
     "node-fetch": "^2.6.1"
@@ -45,9 +47,9 @@
     "config": {
       "patreonUsername": "ox_harris",
       "githubUsername": "webqit",
-      "githubRepository": "pseudo-browser",
-      "githubSlug": "webqit/pseudo-browser",
-      "npmPackageName": "@webqit/pseudo-browser"
+      "githubRepository": "oohtml-ssr",
+      "githubSlug": "webqit/oohtml-ssr",
+      "npmPackageName": "@webqit/oohtml-ssr"
     }
   }
 }
