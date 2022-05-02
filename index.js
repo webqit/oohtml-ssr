@@ -61,6 +61,7 @@ export function createWindow(source, params) {
             };
             // Add the window.print method
             window.print = () => jsdomInstance.serialize();
+            window.toString = () => window.print();
         },
         resources: new SelectiveResourceLoader({
             strictSSL: false,
