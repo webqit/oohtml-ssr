@@ -8,6 +8,11 @@ import Path from 'path';
 import Jsdom from 'jsdom';
 import nodeFetch from 'node-fetch';
 import Oohtml from '@webqit/oohtml';
+import NamespaceHTML from '@webqit/oohtml/src/namespaced-html/index.js';
+import HTMLModules from '@webqit/oohtml/src/html-modules/index.js';
+import HTMLImports from '@webqit/oohtml/src/html-imports/index.js';
+import StateAPI from '@webqit/oohtml/src/state-api/index.js';
+import Subscript from '@webqit/oohtml/src/subscript/index.js';
 import { compileFunction } from 'vm';
 import SelectiveResourceLoader from './SelectiveResourceLoader.js';
 
@@ -72,11 +77,22 @@ export function createWindow(source, params) {
 
     // The CHTML polyfill
     const vmContext = jsdomInstance.getInternalVMContext();
-    Oohtml.call(jsdomInstance.window, { Subscript: { runtimeParams: {
+    const subscriptParams = { runtimeParams: {
         compileFunction: (code, parameters) => compileFunction(code, parameters, {
             parsingContext: vmContext,
         }),
-    } } } );
+    } };
+    if (params.OOHTML_LEVEL === 'namespacing') {
+        NamespaceHTML.call(jsdomInstance.window);
+    } else if (params.OOHTML_LEVEL === 'scripting') {
+        StateAPI.call(jsdomInstance.window);
+        Subscript.call(jsdomInstance.window, subscriptParams);
+    } else if (params.OOHTML_LEVEL === 'templating') {
+        HTMLModules.call(jsdomInstance.window);
+        HTMLImports.call(jsdomInstance.window);
+    } else if (params.OOHTML_LEVEL !== 'none') {
+        Oohtml.call(jsdomInstance.window, { Subscript: subscriptParams } );
+    }
     
     return jsdomInstance.window;
 }
