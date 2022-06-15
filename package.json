@@ -24,7 +24,7 @@
     "postpublish": "git push && git push --tags"
   },
   "dependencies": {
-    "@webqit/oohtml": "^1.10.1",
+    "@webqit/oohtml": "^1.10.2",
     "@webqit/util": "^0.7.0",
     "jsdom": "^16.4.0",
     "node-fetch": "^2.6.1"
