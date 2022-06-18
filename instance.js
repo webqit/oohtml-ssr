@@ -12,7 +12,7 @@ import { createWindow } from './index.js';
 // -----------
 const importURL = Url.parse(import.meta.url);
 const params = QueryString.parse(importURL.query);
-const window = createWindow(params.SOURCE, params);
+const window = createWindow(params.file, params);
 const document = window.document;
 
 if (parseInt(params.G) === 1) {
@@ -21,6 +21,6 @@ if (parseInt(params.G) === 1) {
 }
 
 export {
-    document,
     window,
+    document,
 };

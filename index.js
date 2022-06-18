@@ -33,18 +33,18 @@ export function createWindow(source, params) {
     if (!domIsMarkup && source && !Fs.existsSync(source)) {
         throw new Error('The document filename "' + source + '" does not exist.');
     }
-    if (!params.URL) {
-        throw new Error('Document URL must be given in params.URL.');
+    if (!params.url) {
+        throw new Error('Document URL must be given in params.url.');
     }
     
     // -----------
     // Window setup
     // -----------
-    const URL = Url.parse(params.URL);
+    const URL = Url.parse(params.url);
     const jsdomInstance = new Jsdom.JSDOM(domIsMarkup ? source : (source ? Fs.readFileSync(source).toString() : ''), {
-        url: params.URL,
+        url: params.url,
         contentType: 'text/html',
-        pretendToBeVisual: params.VISUAL_PSEUDO_MODE !== false,
+        pretendToBeVisual: params.pseudovisual_mode !== false,
         beforeParse(window) {
             // Polyfill the window.fetch API
             window.fetch = (url, options) => {
@@ -59,18 +59,19 @@ export function createWindow(source, params) {
                         url = URL.protocol + '//' + URL.host + Path.join(URL.path.toLowerCase(), url).replace(/\\/g, '/');
                     }
                 }
-                if (params.LOG_FETCH) {
+                if (params.log_fetch) {
                     console.log('[FETCH]: ' + url);
                 }
                 return nodeFetch(url, options);
             };
             // Add the window.print method
             window.print = () => jsdomInstance.serialize();
-            window.toString = () => window.print();
+            window.toString = () => jsdomInstance.serialize();
+            window.document.toString = () => jsdomInstance.serialize();
         },
         resources: new SelectiveResourceLoader({
             strictSSL: false,
-            userAgent: params.USER_AGENT || 'WEBQIT/webflo',
+            userAgent: params.user_agent || '@webqit/oohtml-ssr',
         }),
         runScripts: 'dangerously',
     });
@@ -82,15 +83,15 @@ export function createWindow(source, params) {
             parsingContext: vmContext,
         }),
     } };
-    if (params.OOHTML_LEVEL === 'namespacing') {
+    if (params.oohtml_level === 'namespacing') {
         NamespaceHTML.call(jsdomInstance.window);
-    } else if (params.OOHTML_LEVEL === 'scripting') {
+    } else if (params.oohtml_level === 'scripting') {
         StateAPI.call(jsdomInstance.window);
         Subscript.call(jsdomInstance.window, subscriptParams);
-    } else if (params.OOHTML_LEVEL === 'templating') {
+    } else if (params.oohtml_level === 'templating') {
         HTMLModules.call(jsdomInstance.window);
         HTMLImports.call(jsdomInstance.window);
-    } else if (params.OOHTML_LEVEL !== 'none') {
+    } else if (params.oohtml_level !== 'none') {
         Oohtml.call(jsdomInstance.window, { Subscript: subscriptParams } );
     }
     
