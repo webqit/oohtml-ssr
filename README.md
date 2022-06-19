@@ -57,7 +57,7 @@ import { window, document } from '@webqit/oohtml-ssr/instance.js?file=index.html
 ```
 
 ```js
-const { window, document } = import('@webqit/oohtml-ssr/instance.js?file=index.html&url=http://localhost');
+const { window, document } = await import('@webqit/oohtml-ssr/instance.js?file=index.html&url=http://localhost');
 ```
 
 > Import-based instantiation may be useful when you want to take advantage of the import cache to keep instances cached per URL.
