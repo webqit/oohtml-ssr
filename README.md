@@ -40,7 +40,7 @@ const html = window.toString(); // Alternatively: '<!DOCTYPE html>' + window.doc
 ### Options
 
 + **`url`: `String`** - (Required) The URL that translates to `widnow.location`.
-+ **`uaser_agent`: `String`** - The User Agent string used to fetch sub resources. (Defaults to: `@webqit/oohtml-ssr`.)
++ **`user_agent`: `String`** - The User Agent string used to fetch sub resources. (Defaults to: `@webqit/oohtml-ssr`.)
 + **`oohtml_level`: `String`** - How much of OOHTML to support.
     + **`full`** - (Full OOHTML support; default) [HTML Modules](https://github.com/webqit/oohtml#html-modules), [HTML Imports](https://github.com/webqit/oohtml#html-imports), [Namespaced HTML](https://github.com/webqit/oohtml#namespaced-html), [The State API](https://github.com/webqit/oohtml#the-state-api), [Subscript](https://github.com/webqit/oohtml#subscript).
     + **`namespacing`** - [Namespaced HTML](https://github.com/webqit/oohtml#namespaced-html).
@@ -50,7 +50,7 @@ const html = window.toString(); // Alternatively: '<!DOCTYPE html>' + window.doc
 
 ### DOM Readiness
 
-It is often important to know at what point the document has been fully loaded and ready to be traversed. Much of OOHTML waits until this happens. You'd normally want to test the [`document.readyState`](https://developer.mozilla.org/en-US/docs/Web/API/Document/readyState) property and/or listen for the `readystatechange` event on the `document` object. OOHTML exposes a quick way:
+It is often necessary to know at what point the document has been fully loaded and ready to be traversed. Much of OOHTML waits until this happens. You'd normally want to test the [`document.readyState`](https://developer.mozilla.org/en-US/docs/Web/API/Document/readyState) property and/or listen for the [`readystatechange`](https://developer.mozilla.org/en-US/docs/Web/API/Document/readystatechange_event) event on the `document` object. OOHTML exposes a quick way:
 
 ```js
 window.WebQit.DOM.ready(() => {
@@ -65,7 +65,7 @@ await new Promise(res => window.WebQit.DOM.ready(res));
 const html = window.toString();
 ```
 
-Where the document contains OOHTML Modules with remote contents - `<template name="pages" src="/bundle.html"></template>`, the *readiness* of those modules also be important. (Certain HTML Import elements - `<import template="pages"></import>` may be waiting for this to happen.) You'd typically want to test the [`document.templatesReadyState`](https://developer.mozilla.org/en-US/docs/Web/API/Document/readyState) property and/or listen for the `templatesreadystatechange` event on the `document` object:
+Where the document contains OOHTML Modules with remote contents - `<template name="pages" src="/bundle.html"></template>`, observing the *readiness* of those modules might also be necessary. (Certain HTML Import elements - `<import template="pages"></import>` may be waiting for this to happen.) You'd typically want to test the `document.templatesReadyState` property and/or listen for the `templatesreadystatechange` event on the `document` object:
 
 ```js
 window.WebQit.DOM.ready(() => {
@@ -82,11 +82,35 @@ await new Promise(res => {
 const html = window.toString();
 ```
 
-Also, in some cases, certain *async* operations within scripts in the loaded document may need to be awaited before serializing the document. But test with your usecase to know if this is necessary.
+Also, in some cases, certain *async* operations within scripts in the loaded document may need to be awaited before serializing the document. But you should test with your usecase to know if this is necessary.
 
 ```js
 await new Promise(res => setTimeout(res, 10));
 const html = window.toString();
+```
+
+### Subresource Loading
+
+By default, subresources (`<script src>`, etc) embedded on the HTML document are not fetched! But the Boolean attribute `ssr` can be added to a resource to get it fetched.
+
+```js
+/**
+ ├── script.js
+ */
+let h1Element = document.createElement('h1');
+h1Element.innerHTML = 'Hello World!';
+document.body.appendChild(h1Element);
+```
+
+```html
+<!DOCTYPE html>
+<html>
+    <head>
+        <script ssr defer src="/script.js"></script>
+    </head>
+    <body>
+    </body>
+<html>
 ```
 
 ### Import-Based Instantiation
