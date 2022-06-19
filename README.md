@@ -48,6 +48,20 @@ const html = window.toString(); // Alternatively: '<!DOCTYPE html>' + window.doc
     + **`templating`** - [HTML Modules](https://github.com/webqit/oohtml#html-modules), [HTML Imports](https://github.com/webqit/oohtml#html-imports).
     + **`none`** - (None of OOHTML)
 
+### Import-Based Instantiation
+
+It is possible to directly obtain a DOM instance with an `import` expression. Simply import from the `@webqit/oohtml-ssr/instance.js` module with your HTML file name, and other relevant instance parameters, serialized in the inport URL.
+
+```js
+import { window, document } from '@webqit/oohtml-ssr/instance.js?file=index.html&url=http://localhost';
+```
+
+```js
+const { window, document } = import('@webqit/oohtml-ssr/instance.js?file=index.html&url=http://localhost');
+```
+
+> Import-based instantiation may be useful when you want to take advantage of the import cache to keep instances cached per URL.
+
 ### DOM Readiness
 
 It is often necessary to know at what point the document has been fully loaded and ready to be traversed. Much of OOHTML waits until this happens. You'd normally want to test the [`document.readyState`](https://developer.mozilla.org/en-US/docs/Web/API/Document/readyState) property and/or listen for the [`readystatechange`](https://developer.mozilla.org/en-US/docs/Web/API/Document/readystatechange_event) event on the `document` object. OOHTML exposes a quick way:
@@ -112,20 +126,6 @@ document.body.appendChild(h1Element);
     </body>
 <html>
 ```
-
-### Import-Based Instantiation
-
-It is possible to directly obtain a DOM instance with an `import` expression. Simply import from the `@webqit/oohtml-ssr/instance.js` module with your HTML file name, and other relevant instance parameters, serialized in the inport URL.
-
-```js
-import { window, document } from '@webqit/oohtml-ssr/instance.js?file=index.html&url=http://localhost';
-```
-
-```js
-const { window, document } = import('@webqit/oohtml-ssr/instance.js?file=index.html&url=http://localhost');
-```
-
-> Import-based instantiation may be useful when you want to take advantage of the import cache to keep instances cached per URL.
 
 ## Getting Involved
 
