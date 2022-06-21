@@ -129,7 +129,7 @@ document.body.appendChild(h1Element);
 
 ## Getting Involved
 
-All forms of contributions and PR are welcome! To report bugs or request features, please submit an [issue](https://github.com/webqit/oohtml-ssr/issues).
+All forms of contributions and PR are welcome! To report bugs or request features, please submit an [issue](https://github.com/webqit/oohtml-ssr/issues). For general discussions, ideation or community help, please join our github [Discussions](https://github.com/webqit/oohtml-ssr/discussions).
 
 ## License
 
