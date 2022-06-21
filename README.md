@@ -50,7 +50,7 @@ const html = window.toString(); // Alternatively: '<!DOCTYPE html>' + window.doc
 
 ### Import-Based Instantiation
 
-It is possible to directly obtain a DOM instance with an `import` expression. Simply import from the `@webqit/oohtml-ssr/instance.js` module with your HTML file name, and other relevant instance parameters, serialized in the inport URL.
+It is possible to directly obtain a DOM instance with an `import` expression. Simply import from the `@webqit/oohtml-ssr/instance.js` module with your HTML file name, and other relevant instance parameters, serialized in the import URL.
 
 ```js
 import { window, document } from '@webqit/oohtml-ssr/instance.js?file=index.html&url=http://localhost';
