@@ -63,36 +63,23 @@ export function createWindow(source, params = {}) {
                 },
             } }, }, }, }, };
             // Scripts
-            const deferedScripts = new Map;
             const mo = new window.MutationObserver( records => {
                 for ( const record of records ) {
                     for ( const node of record.addedNodes ) {
                         if ( node.tagName !== 'SCRIPT' || node.src || (
                             !node.hasAttribute( 'scoped' ) && !node.hasAttribute( 'contract' )
-                        ) ) continue;
-                        const _clone = window.document.createElement( 'script' );
-                        if ( node.hasAttribute( 'type' ) ) _clone.setAttribute( 'type', node.getAttribute( 'type' ) );
-                        _clone.toggleAttribute( 'scoped', node.hasAttribute( 'scoped' ) );
-                        _clone.toggleAttribute( 'contract', node.hasAttribute( 'contract' ) );
-                        _clone.textContent = node.textContent;
-                        deferedScripts.set( node, _clone );
-                        node.textContent = '';
+                        ) || window.webqit.oohtml.Script ) continue;
+                        let textContent = node.textContent;
+                        node.textContent = ''; // Disarm the script
+                        Object.defineProperty( node, 'textContent', {
+                            set: value => { textContent = value; },
+                            get: () => { return textContent; },
+                        } );
                     }
                 }
             } );
             mo.observe( window.document, { childList: true, subtree: true } );
-            window.document.addEventListener( 'load', () => {
-                mo.disconnect();
-                const vmContext = jsdomInstance.getInternalVMContext();
-                for ( const [ node, _clone ] of deferedScripts ) {
-                    node.replaceWith( _clone );
-                    // Type: module don't run in jsdom
-                    if ( _clone.getAttribute( 'type' )?.trim() === 'module' ) {
-                        runInContext( _clone.textContent, vmContext );
-                    }
-                }
-                deferedScripts.clear();
-            } );
+            window.document.addEventListener( 'load', () => mo.disconnect() );
             // -------------
             // Add the window.print method
             // -------------
