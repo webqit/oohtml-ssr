@@ -29,7 +29,7 @@ describe( `MAIN...`, function() {
                 </script>
             </head>
             <body>
-                <script scoped>
+                <script scoped contract>
                     console.log( "this1", this.tagName );
                     this.testProp = 'Works!';
                 </script>
@@ -41,6 +41,7 @@ describe( `MAIN...`, function() {
         //expect( document.body.testProp ).to.eq('Works!');
         await delay( 200 );
         expect( document.body.testProp2 ).to.eq('Works!');
+        console.log('::::::::::::::::::::::::::::::', document.body.outerHTML);
     } );
 
 } );

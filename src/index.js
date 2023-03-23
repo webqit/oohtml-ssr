@@ -63,6 +63,7 @@ export function createWindow(source, params = {}) {
                 },
             } }, }, }, }, };
             // Scripts
+            const scriptClones = new Map;
             const mo = new window.MutationObserver( records => {
                 for ( const record of records ) {
                     for ( const node of record.addedNodes ) {
@@ -71,15 +72,22 @@ export function createWindow(source, params = {}) {
                         ) || window.webqit.oohtml.Script ) continue;
                         let textContent = node.textContent;
                         node.textContent = ''; // Disarm the script
-                        Object.defineProperty( node, 'textContent', {
-                            set: value => { textContent = value; },
-                            get: () => { return textContent; },
-                        } );
+                        const _clone = window.document.createElement( 'script' );
+                        if ( node.hasAttribute( 'type' ) ) _clone.setAttribute( 'type', node.getAttribute( 'type' ) );
+                        _clone.toggleAttribute( 'scoped', node.hasAttribute( 'scoped' ) );
+                        _clone.toggleAttribute( 'contract', node.hasAttribute( 'contract' ) );
+                        _clone.textContent = textContent;
+                        scriptClones.set( node, _clone );
                     }
                 }
             } );
             mo.observe( window.document, { childList: true, subtree: true } );
-            window.document.addEventListener( 'load', () => mo.disconnect() );
+            window.document.addEventListener( 'load', () => {
+                mo.disconnect();
+                for ( const [ node, _clone ] of scriptClones ) {
+                    node.replaceWith( _clone );
+                }
+            } );
             // -------------
             // Add the window.print method
             // -------------
