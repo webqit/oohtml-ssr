@@ -18,9 +18,7 @@ export default class SelectiveResourceLoader extends Jsdom.ResourceLoader {
      * @return Promise|null
      */
     fetch(url, options) {
-        if (options.element.hasAttribute('ssr')) {
-            return super.fetch(url, options);
-        }
+        if (options.element.hasAttribute('ssr')) { return super.fetch(url, options); }
         return null;
     }
 };

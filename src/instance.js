@@ -15,11 +15,6 @@ const params = QueryString.parse(importURL.query);
 const window = createWindow(params.file, params);
 const document = window.document;
 
-if (parseInt(params.G) === 1) {
-    globalThis.window = window;
-    globalThis.document = document;
-}
-
 export {
     window,
     document,
