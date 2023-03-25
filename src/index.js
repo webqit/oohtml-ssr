@@ -55,7 +55,7 @@ export function createWindow( source, params = {} ) {
             window.fetch = async ( url, options ) => {
                 if ( options.element ) {
                     return resources.fetch( url, options ).then( data => ( {
-                        ok: true, text: () => Promise.resolve( data + '' ),
+                        ok: true, text: () => Promise.resolve( data ? data + '' : '' ),
                     } ) );
                 }
                 url = url.trim();
