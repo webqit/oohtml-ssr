@@ -17,7 +17,7 @@ export default class SelectiveResourceLoader extends Jsdom.ResourceLoader {
      * 
      * @return Promise|null
      */
-    fetch( url, options ) {
+    async fetch( url, options ) {
         if ( !options.element.hasAttribute( 'ssr' ) || !options.element.hasAttribute( 'src' ) ) return;
         const baseUrl = options.element.ownerDocument.location;
         const src = options.element.getAttribute( 'src' );
