@@ -6,8 +6,7 @@ import Fs from 'fs';
 import Url from 'url';
 import Path from 'path';
 import Jsdom from 'jsdom';
-import { compileFunction, runInContext } from 'vm';
-import { SubscriptFunction } from '@webqit/subscript';
+import { runInContext } from 'vm';
 import SelectiveResourceLoader from './SelectiveResourceLoader.js';
 
 /**
@@ -18,50 +17,74 @@ import SelectiveResourceLoader from './SelectiveResourceLoader.js';
  * 
  * @return Jsdom.JSDOM
  */
-export function createWindow(source, params = {}) {
-    var domIsMarkup = source.trim().startsWith('<');
-    if (!domIsMarkup && source && !Fs.existsSync(source)) {
-        throw new Error('The document filename "' + source + '" does not exist.');
+export function createWindow( source, params = {} ) {
+    const domIsMarkup = source.trim().startsWith( '<' );
+    if ( !domIsMarkup && source && !Fs.existsSync( source ) ) {
+        throw new Error( `The document filename "${ source }" does not exist.` );
     }
-    if (!params.url) { throw new Error('Document URL must be given in params.url.'); }
+    if ( !params.url ) { throw new Error( `Document URL must be given in params.url.` ); }
     // -----------
     // Window setup
     // -----------
-    const URL = Url.parse(params.url);
-    const jsdomInstance = new Jsdom.JSDOM(domIsMarkup ? source : (source ? Fs.readFileSync(source).toString() : ''), {
+    const baseUrl = Url.parse( params.url );
+    const jsdomInstance = new Jsdom.JSDOM(domIsMarkup ? source : ( source ? Fs.readFileSync( source ).toString() : '' ), {
         url: params.url,
-        contentType: 'text/html',
-        pretendToBeVisual: params.pseudovisual_mode !== false,
-        resources: new SelectiveResourceLoader({
+        pretendToBeVisual: params.pretendToBeVisual,
+        resources: new SelectiveResourceLoader( {
             strictSSL: false,
-            userAgent: params.user_agent || '@webqit/oohtml-ssr',
-        }),
+            userAgent: params.userAgent || '@webqit/oohtml-ssr',
+        } ),
         runScripts: 'dangerously',
-        beforeParse(window) {
+        beforeParse( window ) {
             // -------------
             // Prox relative URLs
             // -------------
-            window.fetch = (url, options) => {
+            window.fetch = ( url, options ) => {
                 url = url.trim();
-                if (url.startsWith('//')) { url = URL.protocol + url; }
-                else if (!url.startsWith('http')) {
-                    if (url.startsWith('/')) { url = URL.protocol + '//' + URL.host + url; }
-                    else { url = URL.protocol + '//' + URL.host + Path.join(URL.path.toLowerCase(), url).replace(/\\/g, '/'); }
+                if ( !url.includes( ':' ) || ![ 'file', 'http', 'https', ].includes( url.split( ':' )[ 0 ] ) ) {
+                    if ( baseUrl.href.startsWith( 'file:/' ) ) {
+                        url = `${ baseUrl.href }/${ url }`;
+                    } else if ( url.startsWith( '//' ) ) {
+                        url = baseUrl.protocol + url;
+                    } else if ( url.startsWith( '/' ) ) {
+                        url = baseUrl.protocol + '//' + baseUrl.host + url;
+                    } else {
+                        url = baseUrl.protocol + '//' + baseUrl.host + Path.join( baseUrl.path, url ).replace( /\\/g, '/' );
+                    }
                 }
-                if (params.log_fetch) { console.log('[FETCH]: ' + url); }
-                return fetch(url, options);
+                if ( params.logFetch ) { console.log( `[FETCH]: ${ url }` ); }
+                return fetch( url, options );
             };
             // -------------
             // Scoped JS?
             // -------------
-            window.webqit = { oohtml: { configs: { SCOPED_JS: { SubscriptFunction, advanced: { runtimeParams: {
-                compileFunction: (code, parameters) => {
-                    const vmContext = jsdomInstance.getInternalVMContext();
-                    return compileFunction(code, parameters, {
-                        parsingContext: vmContext,
-                    });
-                },
-            } }, }, }, }, };
+            window.MessageChannel = MessageChannel;
+            window.webqit = window.webqit || {};
+            window.webqit.SubscriptCompilerWorker = {
+                postMessage( data, transfers ) {
+                    if ( !window.webqit.SubscriptCompilerImport ) {
+                        const scriptImportSource = `
+                        const customUrl = window.document.querySelector( 'meta[name="subscript-compiler-url"]' );
+                        const compilerUrl = customUrl?.content || 'https://unpkg.com/@webqit/subscript/dist/compiler.js';
+                        const script = window.document.createElement( 'script' );
+                        script.setAttribute( 'src', compilerUrl );
+                        script.toggleAttribute( 'ssr' );
+                        window.document.head.prepend( script );
+                        window.webqit.SubscriptCompilerImport = new Promise( res => {
+                            script.addEventListener( 'load', res );
+                        } );`;
+                        runInContext( scriptImportSource, jsdomInstance.getInternalVMContext() );
+                    }
+                    window.webqit.SubscriptCompilerImport.then( () => {
+                        const { parse, compile } = window.webqit.SubscriptCompiler;
+                        const { source, params } = data;
+                        const ast = parse( source, params.parserParams );
+                        const compilation = compile( ast, params.compilerParams );
+                        compilation.identifier = compilation.identifier.toString();
+                        transfers[ 0 ]?.postMessage( compilation );
+                    } );
+                }
+            };
             // Scripts
             const scriptClones = new Map;
             const mo = new window.MutationObserver( records => {
@@ -69,7 +92,7 @@ export function createWindow(source, params = {}) {
                     for ( const node of record.addedNodes ) {
                         if ( node.tagName !== 'SCRIPT' || node.src || (
                             !node.hasAttribute( 'scoped' ) && !node.hasAttribute( 'contract' )
-                        ) || window.webqit.oohtml.Script ) continue;
+                        ) || window.webqit.oohtml?.Script ) continue;
                         let textContent = node.textContent;
                         node.textContent = ''; // Disarm the script
                         const _clone = window.document.createElement( 'script' );
@@ -94,8 +117,10 @@ export function createWindow(source, params = {}) {
             window.print = () => jsdomInstance.serialize();
             window.toString = () => jsdomInstance.serialize();
             window.document.toString = () => jsdomInstance.serialize();
+
+            if ( params.beforeParse ) { params.beforeParse( window ); }
         },
-    });
+    } );
     return jsdomInstance.window;
 }
 
