@@ -27,6 +27,10 @@ export function createWindow( source, params = {} ) {
     // Window setup
     // -----------
     const baseUrl = Url.parse( params.url );
+    const virtualConsole = new Jsdom.VirtualConsole();
+    // Notice "omitJSDOMErrors: true"...
+    // subresource-loading, fetch() and page errors are handled at SelectiveResourceLoader, window.fetch patch, and window.onerror respectively
+    virtualConsole.sendTo( console, { omitJSDOMErrors: true } );
     const jsdomInstance = new Jsdom.JSDOM(domIsMarkup ? source : ( source ? Fs.readFileSync( source ).toString() : '' ), {
         url: params.url,
         pretendToBeVisual: params.pretendToBeVisual,
@@ -34,8 +38,16 @@ export function createWindow( source, params = {} ) {
             strictSSL: false,
             userAgent: params.userAgent || '@webqit/oohtml-ssr',
         } ),
+        virtualConsole,
         runScripts: 'dangerously',
         beforeParse( window ) {
+            // -------------
+            // Document error handling
+            // Since 'jsdomError' events are disabled in virtualConsole.sendTo()
+            // -------------
+            window.addEventListener( 'error', e => {
+                console.error( e.error );
+            } );
             // -------------
             // Prox relative URLs
             // -------------
@@ -43,6 +55,7 @@ export function createWindow( source, params = {} ) {
                 url = url.trim();
                 if ( !url.includes( ':' ) || ![ 'file', 'http', 'https', ].includes( url.split( ':' )[ 0 ] ) ) {
                     if ( baseUrl.href.startsWith( 'file:/' ) ) {
+                        // E.g. if baseUrl is "file:///C:/path" and url is "/file.ext", we want "file:///C:/path/file.ext"
                         url = `${ baseUrl.href }/${ url }`;
                     } else if ( url.startsWith( '//' ) ) {
                         url = baseUrl.protocol + url;
@@ -53,7 +66,10 @@ export function createWindow( source, params = {} ) {
                     }
                 }
                 if ( params.logFetch ) { console.log( `[FETCH]: ${ url }` ); }
-                return fetch( url, options );
+                return fetch( url, options ).catch( e => {
+                    console.log( `[OOHTMLSSR]: Error fetching resource ${ url }` );
+                    console.log( e.message );
+                } );
             };
             // -------------
             // Scoped JS?
@@ -65,13 +81,16 @@ export function createWindow( source, params = {} ) {
                     if ( !window.webqit.SubscriptCompilerImport ) {
                         const scriptImportSource = `
                         const customUrl = window.document.querySelector( 'meta[name="subscript-compiler-url"]' );
-                        const compilerUrl = customUrl?.content || 'https://unpkg.com/@webqit/subscript/dist/compiler.js';
-                        const script = window.document.createElement( 'script' );
-                        script.setAttribute( 'src', compilerUrl );
-                        script.toggleAttribute( 'ssr' );
-                        window.document.head.prepend( script );
+                        const compilerUrls = ( customUrl?.content.split( ',' ) || [] ).concat( 'https://unpkg.com/@webqit/subscript/dist/compiler.js' );
                         window.webqit.SubscriptCompilerImport = new Promise( res => {
-                            script.addEventListener( 'load', res );
+                            ( function importScript() {
+                                const script = window.document.createElement( 'script' );
+                                script.setAttribute( 'src', compilerUrls.shift().trim() );
+                                script.toggleAttribute( 'ssr' );
+                                window.document.head.append( script );
+                                script.addEventListener( 'load', () => { res(); script.remove(); } );
+                                if ( compilerUrls.length ) { script.addEventListener( 'error', () => { importScript(); script.remove(); } ); }
+                            } )();
                         } );`;
                         runInContext( scriptImportSource, jsdomInstance.getInternalVMContext() );
                     }
