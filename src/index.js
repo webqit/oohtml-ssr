@@ -27,6 +27,10 @@ export function createWindow( source, params = {} ) {
     // Window setup
     // -----------
     const baseUrl = Url.parse( params.url );
+    const resources = new SelectiveResourceLoader( {
+        strictSSL: false,
+        userAgent: params.userAgent || '@webqit/oohtml-ssr',
+    } );
     const virtualConsole = new Jsdom.VirtualConsole();
     // Notice "omitJSDOMErrors: true"...
     // subresource-loading, fetch() and page errors are handled at SelectiveResourceLoader, window.fetch patch, and window.onerror respectively
@@ -34,10 +38,7 @@ export function createWindow( source, params = {} ) {
     const jsdomInstance = new Jsdom.JSDOM(domIsMarkup ? source : ( source ? Fs.readFileSync( source ).toString() : '' ), {
         url: params.url,
         pretendToBeVisual: params.pretendToBeVisual,
-        resources: new SelectiveResourceLoader( {
-            strictSSL: false,
-            userAgent: params.userAgent || '@webqit/oohtml-ssr',
-        } ),
+        resources,
         virtualConsole,
         runScripts: 'dangerously',
         beforeParse( window ) {
@@ -51,21 +52,24 @@ export function createWindow( source, params = {} ) {
             // -------------
             // Prox relative URLs
             // -------------
-            window.fetch = ( url, options ) => {
+            window.fetch = async ( url, options ) => {
+                if ( options.element ) {
+                    return resources.fetch( url, options ).then( data => ( {
+                        ok: true, text: () => Promise.resolve( data + '' ),
+                    } ) );
+                }
                 url = url.trim();
                 if ( !url.includes( ':' ) || ![ 'file', 'http', 'https', ].includes( url.split( ':' )[ 0 ] ) ) {
                     if ( baseUrl.href.startsWith( 'file:/' ) ) {
-                        // E.g. if baseUrl is "file:///C:/path" and url is "/file.ext", we want "file:///C:/path/file.ext"
                         url = `${ baseUrl.href }/${ url }`;
                     } else if ( url.startsWith( '//' ) ) {
-                        url = baseUrl.protocol + url;
+                        url = `${ baseUrl.protocol }${ url }`;
                     } else if ( url.startsWith( '/' ) ) {
-                        url = baseUrl.protocol + '//' + baseUrl.host + url;
+                        url = `${ baseUrl.protocol }//${ baseUrl.host }${ url }`;
                     } else {
-                        url = baseUrl.protocol + '//' + baseUrl.host + Path.join( baseUrl.path, url ).replace( /\\/g, '/' );
+                        url = `${ baseUrl.protocol }//${ baseUrl.host }${ Path.join( baseUrl.path, url ).replace( /\\/g, '/' ) }`;
                     }
                 }
-                if ( params.logFetch ) { console.log( `[FETCH]: ${ url }` ); }
                 return fetch( url, options ).catch( e => {
                     console.log( `[OOHTMLSSR]: Error fetching resource ${ url }` );
                     console.log( e.message );
