@@ -17,7 +17,7 @@ describe( `MAIN...`, function() {
         <!doctype html>
         <html>
             <head>
-                <script ssr src="http://127.0.0.1:5500/oohtml/dist/main.js"></script>
+                <script ssr src="https://unpkg.com/@webqit/oohtml@next/dist/main.js"></script>
                 <script>
                 const script = document.createElement( 'script' );
                 script.setAttribute( 'type', 'module' );
@@ -41,7 +41,7 @@ describe( `MAIN...`, function() {
         //expect( document.body.testProp ).to.eq('Works!');
         await delay( 200 );
         expect( document.body.testProp2 ).to.eq('Works!');
-        console.log('::::::::::::::::::::::::::::::', document.body.outerHTML);
+        //console.log('::::::::::::::::::::::::::::::', document.body.outerHTML);
     } );
 
 } );
