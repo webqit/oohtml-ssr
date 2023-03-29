@@ -39,7 +39,7 @@ describe( `MAIN...`, function() {
 
         await documentReady( window );
         //expect( document.body.testProp ).to.eq('Works!');
-        await delay( 200 );
+        await delay( 500 );
         expect( document.body.testProp2 ).to.eq('Works!');
         //console.log('::::::::::::::::::::::::::::::', document.body.outerHTML);
     } );
