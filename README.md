@@ -8,7 +8,8 @@
 
 OOHTML SSR is a server-side DOM implementation with native support for [OOHTML](https://github.com/webqit/oohtml). It makes it straight-forward to render OOHTML-based documents right on the server. This library is based on [jsdom](https://github.com/jsdom/jsdom)!
 
-> **Info** This is documentation for `v1.2.x`. (Looking for [`v1.1.x`](https://github.com/webqit/oohtml-ssr/tree/v1.1.5)?)
+> **Note**
+> <br>This is documentation for `OOHTML-SSR@1.2.x` - for working with [`OOHTML@2.x`](https://github.com/webqit/oohtml/tree/next). (Looking for [`OOHTML-SSR@1.1.x`](https://github.com/webqit/oohtml-ssr/tree/v1.1.5)?)
 
 ## Installation
 
