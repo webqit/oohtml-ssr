@@ -38,6 +38,19 @@ const html = window.toString(); // Alternatively: '<!DOCTYPE html>' + window.doc
 
 > File name is relative to the Current Working Directory but can be an absolute url.
 
+The OOHTML polyfill is loaded at the document level:
+
+```html
+<!DOCTYPE html>
+<html>
+    <head>
+        <script ssr src="https://unpkg.com/@webqit/oohtml@latest/dist/main.js"></script>
+    </head>
+    <body>
+    </body>
+<html>
+```
+
 ### Options
 
 + **`url`: `String`** - (Required) The URL that translates to `widnow.location`.
