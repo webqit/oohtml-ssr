@@ -73,7 +73,7 @@ const { window, document } = await import( '@webqit/oohtml-ssr/instance.js?file=
 
 ### DOM Readiness
 
-It is often necessary to know at what point the document has been fully loaded and ready to be traversed. Much of OOHTML waits until this happens. You'd normally want to listen for the [`window.onload`](https://developer.mozilla.org/en-US/docs/Web/API/Window/load_event) event.
+It is often necessary to know at what point the document has been fully loaded and ready to be traversed. You'd normally want to listen for the [`window.onload`](https://developer.mozilla.org/en-US/docs/Web/API/Window/load_event) event.
 
 ```js
 await new Promise( res => window.addEventListener( 'load', res ) );
