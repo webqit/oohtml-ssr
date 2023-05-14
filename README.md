@@ -18,7 +18,7 @@ With [npm available on your terminal](https://docs.npmjs.com/downloading-and-ins
 > System Requirements: Node.js 14.0 or later.
 
 ```js
-npm i @webqit/oohtml-ssr@next
+npm i @webqit/oohtml-ssr
 ```
 
 ## Usage
