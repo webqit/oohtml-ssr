@@ -8,7 +8,7 @@
     "DOM"
   ],
   "homepage": "https://webqit.io/tooling/oohtml-ssr",
-  "version": "1.2.13",
+  "version": "1.2.11",
   "license": "MIT",
   "repository": {
     "type": "git",
@@ -22,7 +22,7 @@
   "scripts": {
     "test": "mocha --extension .test.js --exit",
     "test:coverage": "c8 --reporter=text-lcov npm run test | coveralls",
-    "preversion": "git add .",
+    "preversion": "npm run test && git add .",
     "postversion": "npm publish",
     "postpublish": "git push && git push --tags"
   },
