@@ -17,7 +17,7 @@ describe( `MAIN...`, function() {
         <!doctype html>
         <html>
             <head>
-                <script ssr src="https://unpkg.com/@webqit/oohtml@next/dist/main.js"></script>
+                <script ssr src="https://unpkg.com/@webqit/oohtml/dist/main.js"></script>
                 <script>
                 const script = document.createElement( 'script' );
                 script.setAttribute( 'type', 'module' );
