@@ -80,13 +80,13 @@ export function createWindow( source, params = {} ) {
             // -------------
             window.MessageChannel = MessageChannel;
             window.webqit = window.webqit || {};
-            window.webqit.ContractCompilerWorker = {
+            window.webqit.ReflexCompilerWorker = {
                 postMessage( data, transfers ) {
-                    if ( !window.webqit.ContractCompilerImport ) {
+                    if ( !window.webqit.ReflexCompilerImport ) {
                         const scriptImportSource = `
                         const customUrl = window.document.querySelector( 'meta[name="reflex-compiler-url"]' );
                         const compilerUrls = ( customUrl?.content.split( ',' ) || [] ).concat( 'https://unpkg.com/@webqit/reflex-functions/dist/compiler.js' );
-                        window.webqit.ContractCompilerImport = new Promise( res => {
+                        window.webqit.ReflexCompilerImport = new Promise( res => {
                             ( function importScript() {
                                 const script = window.document.createElement( 'script' );
                                 script.setAttribute( 'src', compilerUrls.shift().trim() );
@@ -98,8 +98,8 @@ export function createWindow( source, params = {} ) {
                         } );`;
                         runInContext( scriptImportSource, jsdomInstance.getInternalVMContext() );
                     }
-                    window.webqit.ContractCompilerImport.then( () => {
-                        const { parse, compile } = window.webqit.ContractCompiler;
+                    window.webqit.ReflexCompilerImport.then( () => {
+                        const { parse, compile } = window.webqit.ReflexCompiler;
                         const { source, params } = data;
                         const ast = parse( source, params.parserParams );
                         const compilation = compile( ast, params.compilerParams );
