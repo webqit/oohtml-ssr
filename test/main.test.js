@@ -29,7 +29,7 @@ describe( `MAIN...`, function() {
                 </script>
             </head>
             <body>
-                <script scoped contract>
+                <script scoped reflex>
                     console.log( "this1", this.tagName );
                     this.testProp = 'Works!';
                 </script>

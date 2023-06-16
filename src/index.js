@@ -84,8 +84,8 @@ export function createWindow( source, params = {} ) {
                 postMessage( data, transfers ) {
                     if ( !window.webqit.ContractCompilerImport ) {
                         const scriptImportSource = `
-                        const customUrl = window.document.querySelector( 'meta[name="contract-compiler-url"]' );
-                        const compilerUrls = ( customUrl?.content.split( ',' ) || [] ).concat( 'https://unpkg.com/@webqit/contract/dist/compiler.js' );
+                        const customUrl = window.document.querySelector( 'meta[name="reflex-compiler-url"]' );
+                        const compilerUrls = ( customUrl?.content.split( ',' ) || [] ).concat( 'https://unpkg.com/@webqit/reflex-functions/dist/compiler.js' );
                         window.webqit.ContractCompilerImport = new Promise( res => {
                             ( function importScript() {
                                 const script = window.document.createElement( 'script' );
@@ -114,14 +114,14 @@ export function createWindow( source, params = {} ) {
                 for ( const record of records ) {
                     for ( const node of record.addedNodes ) {
                         if ( node.tagName !== 'SCRIPT' || node.src || (
-                            !node.hasAttribute( 'scoped' ) && !node.hasAttribute( 'contract' )
+                            !node.hasAttribute( 'scoped' ) && !node.hasAttribute( 'reflex' )
                         ) || window.webqit.oohtml?.Script ) continue;
                         let textContent = node.textContent;
                         node.textContent = ''; // Disarm the script
                         const _clone = window.document.createElement( 'script' );
                         if ( node.hasAttribute( 'type' ) ) _clone.setAttribute( 'type', node.getAttribute( 'type' ) );
                         _clone.toggleAttribute( 'scoped', node.hasAttribute( 'scoped' ) );
-                        _clone.toggleAttribute( 'contract', node.hasAttribute( 'contract' ) );
+                        _clone.toggleAttribute( 'reflex', node.hasAttribute( 'reflex' ) );
                         _clone.textContent = textContent;
                         scriptClones.set( node, _clone );
                     }
