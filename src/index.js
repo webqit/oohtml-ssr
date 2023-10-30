@@ -75,18 +75,33 @@ export function createWindow( source, params = {} ) {
                     console.log( e.message );
                 } );
             };
+             // -------------
+             // replaceChildren polyfill
+            // -------------
+            if ( !window.Element.prototype.replaceChildren ) {
+                window.Document.prototype.replaceChildren ||= replaceChildren;
+                window.DocumentFragment.prototype.replaceChildren ||= replaceChildren;
+                window.Element.prototype.replaceChildren ||= replaceChildren;
+                function replaceChildren(...new_children) {
+                    const { childNodes } = this;
+                    while (childNodes.length) {
+                        childNodes[0].remove();
+                    }
+                    this.append(...new_children);
+                }
+            }
             // -------------
             // Scoped JS?
             // -------------
             window.MessageChannel = MessageChannel;
             window.webqit = window.webqit || {};
-            window.webqit.ReflexCompilerWorker = {
+            window.webqit.$fCompilerWorker = {
                 postMessage( data, transfers ) {
-                    if ( !window.webqit.ReflexCompilerImport ) {
+                    if ( !window.webqit.$fCompilerImport ) {
                         const scriptImportSource = `
-                        const customUrl = window.document.querySelector( 'meta[name="reflex-compiler-url"]' );
-                        const compilerUrls = ( customUrl?.content.split( ',' ) || [] ).concat( 'https://unpkg.com/@webqit/reflex-functions/dist/compiler.js' );
-                        window.webqit.ReflexCompilerImport = new Promise( res => {
+                        const customUrl = window.document.querySelector( 'meta[name="$f-compiler-url"]' );
+                        const compilerUrls = ( customUrl?.content.split( ',' ) || [] ).concat( 'https://unpkg.com/@webqit/stateful-js/dist/compiler.js' );
+                        window.webqit.$fCompilerImport = new Promise( ( res, rej ) => {
                             ( function importScript() {
                                 const script = window.document.createElement( 'script' );
                                 script.setAttribute( 'src', compilerUrls.shift().trim() );
@@ -98,42 +113,34 @@ export function createWindow( source, params = {} ) {
                         } );`;
                         runInContext( scriptImportSource, jsdomInstance.getInternalVMContext() );
                     }
-                    window.webqit.ReflexCompilerImport.then( () => {
-                        const { parse, compile } = window.webqit.ReflexCompiler;
+                    window.webqit.$fCompilerImport.then( () => {
+                        const { parse, compile } = window.webqit.$fCompiler;
                         const { source, params } = data;
                         const ast = parse( source, params.parserParams );
                         const compilation = compile( ast, params.compilerParams );
-                        compilation.identifier = compilation.identifier.toString();
-                        transfers[ 0 ]?.postMessage( compilation );
+                        transfers[ 0 ]?.postMessage( {
+                            identifier: compilation.identifier,
+                            originalSource: compilation.originalSource,
+                            compiledSource: compilation + '',
+                            topLevelAwait: compilation.topLevelAwait
+                        } );
                     } );
                 }
             };
             // Scripts
-            const scriptClones = new Map;
             const mo = new window.MutationObserver( records => {
                 for ( const record of records ) {
                     for ( const node of record.addedNodes ) {
                         if ( node.tagName !== 'SCRIPT' || node.src || (
-                            !node.hasAttribute( 'scoped' ) && !node.hasAttribute( 'reflex' )
+                            !node.hasAttribute( 'scoped' ) && !node.hasAttribute( 'stateful' )
                         ) || window.webqit.oohtml?.Script ) continue;
-                        let textContent = node.textContent;
-                        node.textContent = ''; // Disarm the script
-                        const _clone = window.document.createElement( 'script' );
-                        if ( node.hasAttribute( 'type' ) ) _clone.setAttribute( 'type', node.getAttribute( 'type' ) );
-                        _clone.toggleAttribute( 'scoped', node.hasAttribute( 'scoped' ) );
-                        _clone.toggleAttribute( 'reflex', node.hasAttribute( 'reflex' ) );
-                        _clone.textContent = textContent;
-                        scriptClones.set( node, _clone );
+                        const textContent = node.textContent;
+                        node.textContent = `/*@oohtml*/if(false){${textContent}}/*@oohtml*/`; // Disarm the script
                     }
                 }
             } );
-            mo.observe( window.document, { childList: true, subtree: true } );
-            window.document.addEventListener( 'load', () => {
-                mo.disconnect();
-                for ( const [ node, _clone ] of scriptClones ) {
-                    node.replaceWith( _clone );
-                }
-            } );
+            //mo.observe( window.document, { childList: true, subtree: true } );
+            window.document.addEventListener( 'load', e => { mo.disconnect(); } );
             // -------------
             // Add the window.print method
             // -------------
