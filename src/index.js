@@ -95,6 +95,7 @@ export function createWindow( source, params = {} ) {
             // -------------
             window.MessageChannel = MessageChannel;
             window.webqit = window.webqit || {};
+            window.webqit.env = 'server';
             window.webqit.$fCompilerWorker = {
                 postMessage( data, transfers ) {
                     if ( !window.webqit.$fCompilerImport ) {
