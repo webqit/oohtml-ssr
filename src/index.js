@@ -140,7 +140,7 @@ export function createWindow( source, params = {} ) {
                     }
                 }
             } );
-            //mo.observe( window.document, { childList: true, subtree: true } );
+            mo.observe( window.document, { childList: true, subtree: true } );
             window.document.addEventListener( 'load', e => { mo.disconnect(); } );
             // -------------
             // Add the window.print method
