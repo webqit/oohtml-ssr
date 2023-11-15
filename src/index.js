@@ -96,13 +96,13 @@ export function createWindow( source, params = {} ) {
             window.MessageChannel = MessageChannel;
             window.webqit = window.webqit || {};
             window.webqit.env = 'server';
-            window.webqit.$fCompilerWorker = {
+            window.webqit.$qCompilerWorker = {
                 postMessage( data, transfers ) {
-                    if ( !window.webqit.$fCompilerImport ) {
+                    if ( !window.webqit.$qCompilerImport ) {
                         const scriptImportSource = `
-                        const customUrl = window.document.querySelector( 'meta[name="$f-compiler-url"]' );
-                        const compilerUrls = ( customUrl?.content.split( ',' ) || [] ).concat( 'https://unpkg.com/@webqit/stateful-js/dist/compiler.js' );
-                        window.webqit.$fCompilerImport = new Promise( ( res, rej ) => {
+                        const customUrl = window.document.querySelector( 'meta[name="$q-compiler-url"]' );
+                        const compilerUrls = ( customUrl?.content.split( ',' ) || [] ).concat( 'https://unpkg.com/@webqit/quantum-js/dist/compiler.js' );
+                        window.webqit.$qCompilerImport = new Promise( ( res, rej ) => {
                             ( function importScript() {
                                 const script = window.document.createElement( 'script' );
                                 script.setAttribute( 'src', compilerUrls.shift().trim() );
@@ -114,8 +114,8 @@ export function createWindow( source, params = {} ) {
                         } );`;
                         runInContext( scriptImportSource, jsdomInstance.getInternalVMContext() );
                     }
-                    window.webqit.$fCompilerImport.then( () => {
-                        const { parse, compile } = window.webqit.$fCompiler;
+                    window.webqit.$qCompilerImport.then( () => {
+                        const { parse, compile } = window.webqit.$qCompiler;
                         const { source, params } = data;
                         const ast = parse( source, params.parserParams );
                         const compilation = compile( ast, params.compilerParams );
@@ -133,7 +133,7 @@ export function createWindow( source, params = {} ) {
                 for ( const record of records ) {
                     for ( const node of record.addedNodes ) {
                         if ( node.tagName !== 'SCRIPT' || node.src || (
-                            !node.hasAttribute( 'scoped' ) && !node.hasAttribute( 'stateful' )
+                            !node.hasAttribute( 'scoped' ) && !node.hasAttribute( 'quantum' )
                         ) || window.webqit.oohtml?.Script ) continue;
                         const textContent = node.textContent;
                         node.textContent = `/*@oohtml*/if(false){${textContent}}/*@oohtml*/`; // Disarm the script
