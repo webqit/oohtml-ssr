@@ -123,6 +123,7 @@ export function createWindow( source, params = {} ) {
                             identifier: compilation.identifier,
                             originalSource: compilation.originalSource,
                             compiledSource: compilation + '',
+                            compiledSourceBase64: params.base64 ? btoa( compilation + '' ) : '',
                             topLevelAwait: compilation.topLevelAwait
                         } );
                     } );
