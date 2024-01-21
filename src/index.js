@@ -119,13 +119,7 @@ export function createWindow( source, params = {} ) {
                         const { source, params } = data;
                         const ast = parse( source, params.parserParams );
                         const compilation = compile( ast, params.compilerParams );
-                        transfers[ 0 ]?.postMessage( {
-                            identifier: compilation.identifier,
-                            originalSource: compilation.originalSource,
-                            compiledSource: compilation + '',
-                            compiledSourceBase64: params.base64 ? btoa( compilation + '' ) : '',
-                            topLevelAwait: compilation.topLevelAwait
-                        } );
+                        transfers[ 0 ]?.postMessage( { ...compilation } );
                     } );
                 }
             };
