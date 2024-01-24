@@ -118,8 +118,8 @@ export function createWindow( source, params = {} ) {
                         const { parse, compile } = window.webqit.$qCompiler;
                         const { source, params } = data;
                         const ast = parse( source, params.parserParams );
-                        const compilation = compile( ast, params.compilerParams );
-                        transfers[ 0 ]?.postMessage( { ...compilation } );
+                        const { toString, ...compilation } = compile( ast, params.compilerParams );
+                        transfers[ 0 ]?.postMessage( compilation );
                     } );
                 }
             };
