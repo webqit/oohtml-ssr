@@ -21,10 +21,10 @@
   "main": "src/index.js",
   "scripts": {
     "test": "mocha --extension .test.js --exit",
-    "test:coverage": "c8 --reporter=text-lcov npm run test | coveralls",
-    "preversion": "git add .",
-    "postversion": "npm publish",
-    "postpublish": "git push && git push --tags"
+    "build": "echo \"Nothing to build yet\"",
+    "preversion": "npm run test && npm run build",
+    "postversion": "git push && git push --tags",
+    "version:next": "npm version prerelease --preid=next"
   },
   "dependencies": {
     "jsdom": "^16.4.0"
