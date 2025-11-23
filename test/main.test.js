@@ -29,7 +29,8 @@ describe( `MAIN...`, function() {
                 </script>
             </head>
             <body>
-                <script scoped stateful>
+                <script scoped>
+                    "use live";
                     console.log( "this1", this.tagName );
                     this.testProp = 'Works!';
                 </script>
