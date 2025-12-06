@@ -115,7 +115,6 @@ export function createWindow(source, params = {}) {
                         runInContext(scriptImportSource, jsdomInstance.getInternalVMContext());
                     }
                     window.webqit.$useLiveTImport.then(() => {
-                        console.log('------->>>> compile call', data);
                         const { parse, transform, serialize } = window.webqit.$useLiveT
                         const { action, input, params } = data;
                         let result;
