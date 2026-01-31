@@ -52,6 +52,7 @@ export function createWindow(source, params = {}) {
             // -------------
             // Prox relative URLs
             // -------------
+            const existingFetch = window.fetch || fetch;
             window.fetch = async (url, options) => {
                 if (options.element) {
                     return resources.fetch(url, options).then(data => ({
@@ -70,7 +71,7 @@ export function createWindow(source, params = {}) {
                         url = `${baseUrl.protocol}//${baseUrl.host}${Path.join(baseUrl.path, url).replace(/\\/g, '/')}`;
                     }
                 }
-                return fetch(url, options).catch(e => {
+                return existingFetch(url, options).catch(e => {
                     console.log(`[OOHTMLSSR]: Error fetching resource ${url}`);
                     console.log(e.message);
                 });
@@ -93,7 +94,7 @@ export function createWindow(source, params = {}) {
             // -------------
             // Scoped JS?
             // -------------
-            window.MessageChannel = MessageChannel;
+            window.MessageChannel = window.MessageChannel || MessageChannel;
             window.webqit = window.webqit || {};
             window.webqit.env = 'server';
             window.webqit.$useLiveTWorker = {
